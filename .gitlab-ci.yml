@@ -1,7 +1,7 @@
 stages:
   - test
   - release
-#  - freeze
+  - freeze
 
 .test_only:
   only:
@@ -59,14 +59,14 @@ pypi:
     - python setup.py sdist
     - twine upload dist/pimetrics-${VERSION}.tar.gz
 
-#github:
-#  stage: freeze
-#  only:
-#    refs:
-#      - master
-#  before_script:
-#    - export TAG=$(grep -i ^version pimetrics/version.py | awk '{ print $3 }' | tr -d \');
-#  script:
-#    - git remote set-url origin "https://$GITHUB_USER:$GITHUB_TOKEN@github.com/$CI_PROJECT_PATH.git"
-#    - git tag $TAG
-#    - git push --tags
+github:
+  stage: freeze
+  only:
+    refs:
+      - master
+  before_script:
+    - export VERSION=$(grep -i ^version pimetrics/version.py | awk '{ print $3 }' | tr -d \');
+  script:
+    - git remote set-url origin "https://$GITHUB_USER:$GITHUB_TOKEN@github.com/$CI_PROJECT_PATH.git"
+    - git tag $VERSION
+    - git push --tags
