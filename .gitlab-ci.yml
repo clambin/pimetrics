@@ -50,15 +50,14 @@ pypi:
     refs:
       - master
   before_script:
-    - pip install pipenv
-    - pipenv install --dev
+    - pip install -U twine
     - echo "[pypi]" > ~/.pypirc
     - echo "    username = __token__" >> ~/.pypirc
     - echo "    password = ${TWINE_PASSWORD}" >> ~/.pypirc
   script:
-    - pipenv run python setup.py check sdist bdist  # This will fail if your creds are bad.
-    - pipenv run python setup.py sdist bdist_wheel
-    - pipenv run twine upload dist/*
+    - python setup.py check sdist bdist  # This will fail if your creds are bad.
+    - python setup.py sdist bdist_wheel
+    - twine upload dist/*
 
 #github:
 #  stage: freeze
