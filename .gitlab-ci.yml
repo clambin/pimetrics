@@ -1,7 +1,6 @@
 stages:
   - test
   - release
-  - freeze
 
 .test_only:
   only:
@@ -60,7 +59,7 @@ pypi:
     - twine upload dist/pimetrics-${VERSION}.tar.gz
 
 github:
-  stage: freeze
+  stage: release
   only:
     refs:
       - master
