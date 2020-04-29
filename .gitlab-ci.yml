@@ -6,10 +6,8 @@ stages:
 .test_only:
   only:
     changes:
-      - "*.py"
       - "pimetrics/*.py"
       - "tests/*.py"
-      - .gitlab-ci.yml
   except:
     - tags
 
@@ -51,14 +49,16 @@ pypi:
   only:
     refs:
       - master
-  script:
-    - pip install -U twine
+  before_script:
+    - pip install pipenv
+    - pipenv install --dev
     - echo "[pypi]" > ~/.pypirc
     - echo "    username = __token__" >> ~/.pypirc
     - echo "    password = ${TWINE_PASSWORD}" >> ~/.pypirc
-    - python3 setup.py check sdist bdist  # This will fail if your creds are bad.
-    - python setup.py sdist bdist_wheel
-    - twine upload dist/*
+  script:
+    - pipenv run python setup.py check sdist bdist  # This will fail if your creds are bad.
+    - pipenv run python setup.py sdist bdist_wheel
+    - pipenv run twine upload dist/*
 
 #github:
 #  stage: freeze
