@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/pymetrics.iml" filepath="$PROJECT_DIR$/.idea/pymetrics.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/pimetrics.iml" filepath="$PROJECT_DIR$/.idea/pimetrics.iml" />
     </modules>
   </component>
 </project>

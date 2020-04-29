@@ -1,0 +1,10 @@
+/.idea/
+/__pycache__
+/*/__pycache__/
+/.gitignore
+.coverage
+coverage.xml
+/build/
+/dist/
+/pimetrics.egg-info/
+

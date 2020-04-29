@@ -1,6 +1,6 @@
 import os
 import pytest
-from pymetrics.probe import Probe, FileProbe, ProcessProbe, Probes, APIProbe
+from pimetrics.probe import Probe, FileProbe, ProcessProbe, Probes, APIProbe
 
 
 class SimpleProbe(Probe):

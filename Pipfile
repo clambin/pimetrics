@@ -8,6 +8,7 @@ pytest = "*"
 
 [packages]
 requests = "*"
+twine = "*"
 
 [requires]
 python_version = "3.7"
