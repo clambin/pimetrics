@@ -1,0 +1,65 @@
+stages:
+  - test
+
+.test_only:
+  only:
+    changes:
+      - "*.py"
+      - "pymetrics/*.py"
+      - "tests/*.py"
+      - .gitlab-ci.yml
+  except:
+    - tags
+
+.build_only:
+  only:
+    changes:
+      - "*.py"
+      - "pymetrics/*.py"
+      - .gitlab-ci.yml
+  except:
+    - tags
+
+
+flake8:
+  stage: test
+  extends: .test_only
+  image: python:3.7
+  before_script:
+    - pip install pipenv
+    - pipenv install --dev
+  script:
+    - pipenv run flake8 --max-line-length 120 pymetric/*.py
+
+pytest:
+  stage: test
+  extends: .test_only
+  image: python:3.7
+  before_script:
+    - pip install pipenv
+    - pipenv install --dev
+  script:
+    - pipenv check
+    - cd tests && pipenv run pytest --cov
+    - pipenv run bash <(curl -s https://codecov.io/bash) -s tests
+
+#publish:
+#  stage: release
+#  extends: .docker
+#  only:
+#    refs:
+#      - master
+#  script:
+#    - ...
+#
+#github:
+#  stage: release
+#  only:
+#    refs:
+#      - master
+#  before_script:
+#    - export TAG=$(grep -i ^version version.py | awk '{ print $3 }' | tr -d \');
+#  script:
+#    - git remote set-url origin "https://$GITHUB_USER:$GITHUB_TOKEN@github.com/$CI_PROJECT_PATH.git"
+#    - git tag $TAG
+#    - git push --tags
