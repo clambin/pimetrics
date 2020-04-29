@@ -54,10 +54,10 @@ pypi:
     - echo "[pypi]" > ~/.pypirc
     - echo "    username = __token__" >> ~/.pypirc
     - echo "    password = ${TWINE_PASSWORD}" >> ~/.pypirc
+    - export VERSION=$(grep -i ^version pimetrics/version.py | awk '{ print $3 }' | tr -d \');
   script:
-    - python setup.py check sdist bdist  # This will fail if your creds are bad.
-    - python setup.py sdist bdist_wheel
-    - twine upload dist/*
+    - python setup.py sdist
+    - twine upload dist/pimetrics-${VERSION}.tar.gz
 
 #github:
 #  stage: freeze
