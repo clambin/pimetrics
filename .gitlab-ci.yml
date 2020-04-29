@@ -1,5 +1,7 @@
 stages:
   - test
+  - release
+  - freeze
 
 .test_only:
   only:
@@ -43,22 +45,17 @@ pytest:
     - cd tests && pipenv run pytest --cov
     - pipenv run bash <(curl -s https://codecov.io/bash) -s tests
 
-#publish:
-#  stage: release
-#  image: python:3.7
-#  only:
-#    refs:
-#      - master
-#  script:
-#    - script:
-#  - pip install twine
-#  - rm -rf dist
-#  - echo "[pypi]" >> ~/.pypirc
-#  - echo     username = __token__" >> ~/.pypirc
-#  - echo     password = ${PYPI_TOKEN}" >> ~/.pypirc
-#  - python3 setup.py check sdist bdist  # This will fail if your creds are bad.
-#  - python setup.py sdist bdist_wheel
-#  - twine upload nexus dist/*.tar.gz
+pypi:
+  stage: release
+  image: python:3.7
+  only:
+    refs:
+      - master
+  script:
+    - pip install -U twine
+    - python3 setup.py check sdist bdist  # This will fail if your creds are bad.
+    - python setup.py sdist bdist_wheel
+    - twine upload dist/*
 
 #github:
 #  stage: release
