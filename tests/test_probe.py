@@ -1,6 +1,6 @@
 import os
 import pytest
-from pimetrics.probe import Probe, FileProbe, ProcessProbe, Probes, APIProbe
+from pimetrics.probe import Probe, FileProbe, SysFSProbe, ProcessProbe, Probes, APIProbe
 
 
 class SimpleProbe(Probe):
@@ -38,17 +38,31 @@ def test_file():
     # create the file
     open('testfile.txt', 'w')
     probe = FileProbe('testfile.txt')
+    expected = ""
     for val in range(1, 10):
-        with open('testfile.txt', 'w') as f:
-            f.write(f'{val}')
+        with open('testfile.txt', 'a') as f:
+            f.write(f'{val}\n')
+        expected += f'{val}\n'
         probe.run()
-        assert probe.measured() == val
+        assert probe.measured() == expected
     os.remove('testfile.txt')
 
 
 def test_bad_file():
     with pytest.raises(FileNotFoundError):
         FileProbe('testfile.txt')
+
+
+def test_sysfs():
+    # create the file
+    open('testfile.txt', 'w')
+    probe = SysFSProbe('testfile.txt')
+    for val in range(1, 10):
+        with open('testfile.txt', 'w') as f:
+            f.write(f'{val}')
+        probe.run()
+        assert probe.measured() == val
+    os.remove('testfile.txt')
 
 
 def test_process():

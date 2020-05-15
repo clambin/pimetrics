@@ -50,19 +50,27 @@ class Probes:
 
 
 class FileProbe(Probe):
-    def __init__(self, filename, divider=1):
+    def __init__(self, filename):
         super().__init__()
         self.filename = filename
-        self.divider = divider
         f = open(self.filename)
         f.close()
 
     def process(self, content):
-        return float(content) / self.divider
+        return content
 
     def measure(self):
         with open(self.filename) as f:
             return ''.join(f.readlines())
+
+
+class SysFSProbe(FileProbe):
+    def __init__(self, filename, divider=1):
+        super().__init__(filename)
+        self.divider = divider
+
+    def process(self, content):
+        return float(content) / self.divider
 
 
 class ProcessReader:
