@@ -37,7 +37,7 @@ pytest:
     - pip install pipenv
     - pipenv install --dev
   script:
-    - cd tests && pipenv run pytest --cov
+    - cd tests && pipenv run pytest --cov --junitxml=report.xml
     - pipenv run bash <(curl -s https://codecov.io/bash) -s tests
   artifacts:
     reports:
