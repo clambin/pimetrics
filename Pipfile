@@ -8,6 +8,7 @@ pytest = "*"
 twine = "*"
 pytest-cov = "*"
 flake8 = "*"
+bandit = "*"
 
 [packages]
 requests = "*"

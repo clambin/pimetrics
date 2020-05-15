@@ -2,23 +2,19 @@ stages:
   - test
   - release
 
+# Don't run for new tags
+workflow:
+  rules:
+    - if: $CI_COMMIT_TAG
+      when: never
+    - when: always
+
 .test_only:
   only:
     changes:
       - "pimetrics/*.py"
       - "tests/*.py"
-  except:
-    - tags
-
-.build_only:
-  only:
-    changes:
-      - "*.py"
-      - "pimetrics/*.py"
       - .gitlab-ci.yml
-  except:
-    - tags
-
 
 flake8:
   stage: test
@@ -38,16 +34,25 @@ pytest:
     - pip install pipenv
     - pipenv install --dev
   script:
-    - pipenv check
     - cd tests && pipenv run pytest --cov
     - pipenv run bash <(curl -s https://codecov.io/bash) -s tests
+
+sast:
+  stage: test
+  extends: .test_only
+  image: python:3.7
+  before_script:
+    - pip install pipenv
+    - pipenv install --dev
+  script:
+    - PIPENV_PYUP_API_KEY="" pipenv check
+    - pipenv run bandit -r pimetrics/*.py
 
 pypi:
   stage: release
   image: python:3.7
-  only:
-    refs:
-      - master
+  rules:
+    - if: $CI_COMMIT_BRANCH == "master"
   before_script:
     - pip install -U twine
     - echo "[pypi]" > ~/.pypirc
@@ -60,12 +65,11 @@ pypi:
 
 github:
   stage: release
-  only:
-    refs:
-      - master
+  rules:
+    - if: $CI_COMMIT_BRANCH == "master"
   before_script:
     - export VERSION=$(grep -i ^version pimetrics/version.py | awk '{ print $3 }' | tr -d \');
-  script:
     - git remote set-url origin "https://$GITHUB_USER:$GITHUB_TOKEN@github.com/$CI_PROJECT_PATH.git"
+  script:
     - git tag $VERSION
     - git push --tags
