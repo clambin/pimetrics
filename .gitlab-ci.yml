@@ -10,11 +10,14 @@ workflow:
     - when: always
 
 .test_only:
-  only:
-    changes:
+  rules:
+    - if: $CI_COMMIT_BRANCH == "master"
+      when: on_success
+    - changes:
       - "pimetrics/*.py"
       - "tests/*.py"
       - .gitlab-ci.yml
+      when: on_success
 
 flake8:
   stage: test
@@ -36,6 +39,9 @@ pytest:
   script:
     - cd tests && pipenv run pytest --cov
     - pipenv run bash <(curl -s https://codecov.io/bash) -s tests
+  artifacts:
+    reports:
+      junit: tests/report.xml
 
 sast:
   stage: test
