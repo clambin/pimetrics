@@ -112,9 +112,10 @@ class APIPostTester(APIProbe):
     def __init__(self, url, name, job):
         super().__init__(url)
         self.body = {'name': name, 'job': job}
+        self.behave = True
 
     def measure(self):
-        response = self.post(body=self.body)
+        response = self.post(body=self.body if self.behave else 'this will trigger an error')
         if response.status_code != 201:
             return None
         return response.json()
@@ -155,3 +156,7 @@ def test_api_post(supply_url, name, job):
     assert response['job'] == job
     assert response['id'] is not None
     assert response['createdAt'] is not None
+    probe.behave = False
+    probe.run()
+    response = probe.measured()
+    assert response is None
