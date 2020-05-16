@@ -58,9 +58,8 @@ class Probe(ABC):
         This method typically should not need to be overriden.
         """
         output = self.measure()
-        output = self.process(output)
-        self.output = output
-        self.report(output)
+        self.output = self.process(output)
+        self.report(self.output)
 
 
 class Probes:

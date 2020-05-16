@@ -97,14 +97,25 @@ def test_probes():
             assert results[j] == target
 
 
-class APIProbeTester(APIProbe):
+class APIGetTester(APIProbe):
     def __init__(self, url):
         super().__init__(url)
-        self.target = None
 
     def measure(self):
         response = self.get()
         if response.status_code != 200:
+            return None
+        return response.json()
+
+
+class APIPostTester(APIProbe):
+    def __init__(self, url, name, job):
+        super().__init__(url)
+        self.body = {'name': name, 'job': job}
+
+    def measure(self):
+        response = self.post(body=self.body)
+        if response.status_code != 201:
             return None
         return response.json()
 
@@ -115,9 +126,9 @@ def supply_url():
 
 
 @pytest.mark.parametrize('user_id, first_name', [(1, 'George'), (2, 'Janet')])
-def test_api_probe(supply_url, user_id, first_name):
+def test_api_get(supply_url, user_id, first_name):
     url = supply_url + "/users/" + str(user_id)
-    probe = APIProbeTester(url)
+    probe = APIGetTester(url)
     probe.run()
     response = probe.measured()
     assert response is not None
@@ -125,9 +136,22 @@ def test_api_probe(supply_url, user_id, first_name):
     assert response['data']['first_name'] == first_name
 
 
-def test_api_probe_exception(supply_url):
+def test_api_get_exception(supply_url):
     url = supply_url + "/users/50"
-    probe = APIProbeTester(url)
+    probe = APIGetTester(url)
     probe.run()
     response = probe.measured()
     assert response is None
+
+
+@pytest.mark.parametrize('name, job', [('morpheus', 'leader'), ('neo', 'the one')])
+def test_api_post(supply_url, name, job):
+    url = supply_url + "/users/"
+    probe = APIPostTester(url, name, job)
+    probe.run()
+    response = probe.measured()
+    assert response is not None
+    assert response['name'] == name
+    assert response['job'] == job
+    assert response['id'] is not None
+    assert response['createdAt'] is not None
