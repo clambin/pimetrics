@@ -1,4 +1,8 @@
 # pimetrics
+![GitHub tag (latest by date)](https://img.shields.io/github/v/tag/clambin/pimetrics?color=green&label=Release&style=plastic)![Codecov](https://img.shields.io/codecov/c/gh/clambin/pimetrics?style=plastic)
+![Gitlab pipeline status (branch)](https://img.shields.io/gitlab/pipeline/clambin/pimetrics/master?style=plastic)
+![GitHub](https://img.shields.io/github/license/clambin/pimetrics?style=plastic)
+
 A set of Probes to measure values from different sources and report them to a reporting system (e.g. Prometheus)
 
 ## Classes
