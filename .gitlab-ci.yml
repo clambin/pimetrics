@@ -34,7 +34,7 @@ workflow:
     - docker
     - shared
   before_script:
-    - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USER" --password-stdin
+    - echo "$DOCKER_PASSWORD" | docker login --username "$DOCKER_USER" --password-stdin
 
 flake8:
   stage: test
