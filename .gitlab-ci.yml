@@ -51,11 +51,9 @@ pytest:
   extends:
     - .test_only
     - .docker
-  image: python:3.7
-  before_script:
+  script:
     - pip install pipenv
     - pipenv install --dev
-  script:
     - docker run -d --name=tinyproxy -p 8888:8888 dannydirect/tinyproxy:latest ANY
     - cd tests && pipenv run pytest --proxies https://docker:8888 --cov --junitxml=report.xml
     - pipenv run bash <(curl -s https://codecov.io/bash) -s tests
