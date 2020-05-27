@@ -19,6 +19,23 @@ workflow:
       - .gitlab-ci.yml
       when: on_success
 
+.docker:
+  image: docker:stable
+  services:
+    - docker:stable-dind
+  variables:
+    DOCKER_DRIVER: overlay2
+    DOCKER_HOST: tcp://docker:2376
+    DOCKER_TLS_VERIFY: 1
+    DOCKER_TLS_CERTDIR: "/certs"
+    DOCKER_CERT_PATH: "/certs/client"
+    DOCKER_CLI_EXPERIMENTAL: enabled
+  tags:
+    - docker
+    - shared
+  before_script:
+    - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USER" --password-stdin
+
 flake8:
   stage: test
   extends: .test_only
@@ -31,7 +48,9 @@ flake8:
 
 pytest:
   stage: test
-  extends: .test_only
+  extends:
+    - .test_only
+    - .docker
   image: python:3.7
   before_script:
     - pip install pipenv
