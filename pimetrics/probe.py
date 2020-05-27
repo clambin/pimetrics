@@ -209,16 +209,17 @@ class APIProbe(Probe, ABC):
 
     Since API calls require specific setup, measure should be overriden to specify application-specific logic.
     """
-    def __init__(self, url):
+    def __init__(self, url, proxies=None):
         super().__init__()
         self.url = url
+        self.proxies = proxies
 
     def get(self, endpoint=None, headers=None, body=None, params=None):
         """Call the API via HTTP GET"""
         url = f'{self.url}{endpoint}' if endpoint else self.url
-        return requests.get(url, headers=headers, json=body, params=params)
+        return requests.get(url, headers=headers, json=body, params=params, proxies=self.proxies)
 
     def post(self, endpoint=None, headers=None, body=None):
         """Call the API via HTTP POST"""
         url = f'{self.url}{endpoint}' if endpoint else self.url
-        return requests.post(url, headers=headers, json=body)
+        return requests.post(url, headers=headers, json=body, proxies=self.proxies)

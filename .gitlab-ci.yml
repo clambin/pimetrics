@@ -37,7 +37,8 @@ pytest:
     - pip install pipenv
     - pipenv install --dev
   script:
-    - cd tests && pipenv run pytest --cov --junitxml=report.xml
+    - docker run -d --name=tinyproxy -p 8888:8888 dannydirect/tinyproxy:latest ANY
+    - cd tests && pipenv run pytest --proxies https://docker:8888 --cov --junitxml=report.xml
     - pipenv run bash <(curl -s https://codecov.io/bash) -s tests
   artifacts:
     reports:

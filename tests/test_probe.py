@@ -1,5 +1,6 @@
 import os
 import pytest
+import requests
 from pimetrics.probe import Probe, FileProbe, SysFSProbe, ProcessProbe, Probes, APIProbe
 
 
@@ -98,8 +99,8 @@ def test_probes():
 
 
 class APIGetTester(APIProbe):
-    def __init__(self, url):
-        super().__init__(url)
+    def __init__(self, url, proxies=None):
+        super().__init__(url, proxies=proxies)
 
     def measure(self):
         response = self.get()
@@ -160,3 +161,34 @@ def test_api_post(supply_url, name, job):
     probe.run()
     response = probe.measured()
     assert response is None
+
+
+def get_proxies(cmdopt_proxies):
+    proxies = {}
+    for proxy in cmdopt_proxies.split(','):
+        protocol = proxy.split(':')[0]
+        proxies[protocol] = proxy
+    return proxies
+
+
+def test_api_get_proxy(supply_url, cmdopt_proxies):
+    url = supply_url + "/users/1"
+    proxies = get_proxies(cmdopt_proxies)
+    probe = APIGetTester(url, proxies=proxies)
+    probe.run()
+    response = probe.measured()
+    assert response is not None
+    assert response['data']['id'] == 1
+    assert response['data']['first_name'] == 'George'
+
+
+@pytest.mark.parametrize('user_id, first_name', [(1, 'George'), (2, 'Janet')])
+def test_api_get_bad_proxy(supply_url, user_id, first_name):
+    url = supply_url + "/users/" + str(user_id)
+    proxies = {
+        'https': 'http://localhost:8889',
+    }
+    probe = APIGetTester(url, proxies=proxies)
+    with pytest.raises(requests.exceptions.RequestException):
+        probe.run()
+
