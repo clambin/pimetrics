@@ -1,5 +1,6 @@
 # pimetrics
-![GitHub tag (latest by date)](https://img.shields.io/github/v/tag/clambin/pimetrics?color=green&label=Release&style=plastic)![Codecov](https://img.shields.io/codecov/c/gh/clambin/pimetrics?style=plastic)
+![GitHub tag (latest by date)](https://img.shields.io/github/v/tag/clambin/pimetrics?color=green&label=Release&style=plastic)
+![Codecov](https://img.shields.io/codecov/c/gh/clambin/pimetrics?style=plastic)
 ![Gitlab pipeline status (branch)](https://img.shields.io/gitlab/pipeline/clambin/pimetrics/master?style=plastic)
 ![GitHub](https://img.shields.io/github/license/clambin/pimetrics?style=plastic)
 
@@ -295,6 +296,29 @@ CLASSES
      |  run(self)
      |      Run all probes
      |  
+
+NAME
+    pimetrics.scheduler
+
+CLASSES
+    builtins.object
+        Scheduler
+    
+    class Scheduler(builtins.object)
+     |  Methods defined here:
+     |  
+     |  register(self, probe, interval=5)
+     |      Register a probe to run at a certain interval
+     |      
+     |      :param probe: probe to register
+     |      :param interval: interval at which to run the probe
+     |  
+     |  run(self, once=False, duration=None)
+     |      Run all registered probes
+     |      
+     |      :param once: Run all probes only once (regardless of their specified interval)
+     |      :param duration: How long we should run all required probes
+     |  
 ```
 
 ## Examples
@@ -311,4 +335,3 @@ See the following github sources for examples:
 # License
 
 This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details
-
