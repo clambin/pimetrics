@@ -35,10 +35,11 @@ pytest:
   before_script:
     - pip install pipenv
     - pipenv install --dev
+    - pip install proxy.py
   script:
     - proxy &
     - PROXY_PID=$!
-    - cd tests && pipenv run pytest --proxies https://docker:8888 --cov --junitxml=report.xml
+    - cd tests && pipenv run pytest --cov --junitxml=report.xml
     - pipenv run bash <(curl -s https://codecov.io/bash) -s tests
     - kill $PROXY_PID
   artifacts:
