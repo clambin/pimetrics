@@ -268,8 +268,9 @@ CLASSES
      |  
      |  Methods defined here:
      |  
-     |  __init__(self, url)
-     |      Constructor
+     |  __init__(self, url, proxies=None)
+     |      :param url: the base URL for the API service. Will be extended by the endpoint specified in get/post
+     |      :param proxies: Proxies to use for the API call, in requeusts proxy format (dict of 'protocol': 'url')
      |  
      |  get(self, endpoint=None, headers=None, body=None, params=None)
      |      Call the API via HTTP GET
