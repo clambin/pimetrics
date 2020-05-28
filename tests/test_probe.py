@@ -163,17 +163,12 @@ def test_api_post(supply_url, name, job):
     assert response is None
 
 
-def get_proxies(cmdopt_proxies):
-    proxies = {}
-    for proxy in cmdopt_proxies.split(','):
-        protocol = proxy.split(':')[0]
-        proxies[protocol] = proxy
-    return proxies
-
-
-def test_api_get_proxy(supply_url, cmdopt_proxies):
+def test_api_get_proxy(supply_url):
     url = supply_url + "/users/1"
-    proxies = get_proxies(cmdopt_proxies)
+    proxies = {
+        'http': 'http://localhost:8888',
+        'https': 'https://localhost:8888',
+    }
     probe = APIGetTester(url, proxies=proxies)
     probe.run()
     response = probe.measured()
@@ -182,9 +177,8 @@ def test_api_get_proxy(supply_url, cmdopt_proxies):
     assert response['data']['first_name'] == 'George'
 
 
-@pytest.mark.parametrize('user_id, first_name', [(1, 'George'), (2, 'Janet')])
-def test_api_get_bad_proxy(supply_url, user_id, first_name):
-    url = supply_url + "/users/" + str(user_id)
+def test_api_get_bad_proxy(supply_url):
+    url = supply_url + "/users/1"
     proxies = {
         'https': 'http://localhost:8889',
     }

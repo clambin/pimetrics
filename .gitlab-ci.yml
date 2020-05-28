@@ -19,45 +19,27 @@ workflow:
       - .gitlab-ci.yml
       when: on_success
 
-.docker:
-  image: docker:stable
-  services:
-    - docker:stable-dind
-  variables:
-    DOCKER_DRIVER: overlay2
-    DOCKER_HOST: tcp://docker:2376
-    DOCKER_TLS_VERIFY: 1
-    DOCKER_TLS_CERTDIR: "/certs"
-    DOCKER_CERT_PATH: "/certs/client"
-    DOCKER_CLI_EXPERIMENTAL: enabled
-  tags:
-    - docker
-    - shared
-  before_script:
-    - echo "$DOCKER_PASSWORD" docker login --username "$DOCKER_USER" --password-stdin
-    - echo "$DOCKER_PASSWORD" | docker login --username "$DOCKER_USER" --password-stdin
-
 flake8:
   stage: test
   extends: .test_only
   image: python:3.7
   before_script:
-    - pip install pipenv
-    - pipenv install --dev
+    - pip install flake8
   script:
-    - pipenv run flake8 --max-line-length 120 pimetrics/*.py
+    - flake8 --max-line-length 120 pimetrics/*.py
 
 pytest:
   stage: test
-  extends:
-    - .test_only
-    - .docker
-  script:
+  extends: .test_only
+  before_script:
     - pip install pipenv
     - pipenv install --dev
-    - docker run -d --name=tinyproxy -p 8888:8888 dannydirect/tinyproxy:latest ANY
+  script:
+    - proxy &
+    - PROXY_PID=$!
     - cd tests && pipenv run pytest --proxies https://docker:8888 --cov --junitxml=report.xml
     - pipenv run bash <(curl -s https://codecov.io/bash) -s tests
+    - kill $PROXY_PID
   artifacts:
     reports:
       junit: tests/report.xml

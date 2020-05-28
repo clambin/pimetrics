@@ -9,6 +9,7 @@ twine = "*"
 pytest-cov = "*"
 flake8 = "*"
 bandit = "*"
+proxy.py = "*"
 
 [packages]
 requests = "*"
