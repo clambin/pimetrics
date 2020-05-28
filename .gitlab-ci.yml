@@ -24,10 +24,9 @@ flake8:
   extends: .test_only
   image: python:3.7
   before_script:
-    - pip install pipenv
-    - pipenv install --dev
+    - pip install flake8
   script:
-    - pipenv run flake8 --max-line-length 120 pimetrics/*.py
+    - flake8 --max-line-length 120 pimetrics/*.py
 
 pytest:
   stage: test
@@ -36,9 +35,13 @@ pytest:
   before_script:
     - pip install pipenv
     - pipenv install --dev
+    - pip install proxy.py
   script:
+    - proxy --port 8888 &
+    - PROXY_PID=$!
     - cd tests && pipenv run pytest --cov --junitxml=report.xml
     - pipenv run bash <(curl -s https://codecov.io/bash) -s tests
+    - kill $PROXY_PID
   artifacts:
     reports:
       junit: tests/report.xml
