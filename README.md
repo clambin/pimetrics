@@ -271,68 +271,6 @@ CLASSES
      |      This method typically should not need to be overriden.
      |  
     
-pimetrics.probe.ProcessProbe = class ProcessProbe(Probe)
- |  pimetrics.probe.ProcessProbe(cmd)
- |  
- |  processProbe measures values reported by an externally spawned process.
- |  
- |  typical example would be to report latency & packet loss measured by a ping command.
- |  see https://github.com/clambin/pinger for an example
- |  
- |  method resolution order:
- |      ProcessProbe
- |      Probe
- |      abc.ABC
- |      builtins.object
- |  
- |  methods defined here:
- |  
- |  __init__(self, cmd)
- |      Class constructor.
- |      
- |      :param cmd: command to run
- |  
- |  measure(self)
- |      Read the output of the spawned command. Processing logic should be in ProcessProbe.process().
- |  
- |  running(self)
- |      Check if the spawned process is still running. Useful to see if the Probe should be recreated.
- |  
- |  ----------------------------------------------------------------------
- |  data and other attributes defined here:
- |  
- |  __abstractmethods__ = frozenset()
- |  
- |  ----------------------------------------------------------------------
- |  methods inherited from Probe:
- |  
- |  measured(self)
- |      Returns the last measured & processed value
- |  
- |  process(self, output)
- |      Process any measured data before reporting it.  By default, this passes through the measured data
- |      
- |      :param output: value measured by measure()
- |  
- |  report(self, output)
- |      Report the measured & processed data to the reporting system
- |      
- |      :param output: value processed by process()
- |  
- |  run(self)
- |      Measure, process & report a data point.
- |      
- |      This method typically should not need to be overriden.
- |  
- |  ----------------------------------------------------------------------
- |  Data descriptors inherited from Probe:
- |  
- |  __dict__
- |      dictionary for instance variables (if defined)
- |  
- |  __weakref__
- |      list of weak references to the object (if defined)
-
     class Probes(builtins.object)
      |  Convenience class to make code a little simpler.
      |  
