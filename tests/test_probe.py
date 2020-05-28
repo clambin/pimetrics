@@ -180,7 +180,7 @@ def test_api_get_proxy(supply_url):
 def test_api_get_bad_proxy(supply_url):
     url = supply_url + "/users/1"
     proxies = {
-        'https': 'http://localhost:8889',
+        'https': 'https://localhost:8889',
     }
     probe = APIGetTester(url, proxies=proxies)
     with pytest.raises(requests.exceptions.RequestException):
