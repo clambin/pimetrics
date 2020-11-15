@@ -34,4 +34,3 @@ def test_scheduler():
     assert scheduler.scheduled_items[1].probe.count == 4
     assert scheduler.scheduled_items[2].probe.count == 3
     assert scheduler.scheduled_items[3].probe.count == 2
-

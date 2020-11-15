@@ -12,7 +12,7 @@ class _ScheduledProbe:
 
     def run(self):
         self.probe.run()
-        self.next_run = time.time()+self.interval
+        self.next_run = time.time() + self.interval
 
 
 class Scheduler:
