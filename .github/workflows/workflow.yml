@@ -29,3 +29,19 @@ jobs:
       with:
         file: tests/coverage.xml
         token: ${{ secrets.CODECOV_TOKEN }}
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+        with:
+          python-version: 3.7
+      - name: package
+        run: |
+          python setup.py sdist
+          ls dist
+      - name: publish
+        if: startsWith(github.ref, 'refs/tags')
+        uses: pypa/gh-action-pypi-publish@master
+        with:
+          password: ${{ secrets.PYPI_TOKEN }}
