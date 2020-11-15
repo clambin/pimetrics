@@ -7,9 +7,10 @@ verify_ssl = true
 pytest = "*"
 twine = "*"
 pytest-cov = "*"
+proxy-py = "*"
 flake8 = "*"
 bandit = "*"
-proxy.py = "*"
+safety = "*"
 
 [packages]
 requests = "*"

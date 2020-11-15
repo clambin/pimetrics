@@ -1,6 +1,8 @@
 import os
+import time
 import pytest
 import requests
+import proxy
 from pimetrics.probe import Probe, FileProbe, SysFSProbe, ProcessProbe, Probes, APIProbe
 
 
@@ -164,25 +166,26 @@ def test_api_post(supply_url, name, job):
 
 
 def test_api_get_proxy(supply_url):
-    url = supply_url + "/users/1"
-    proxies = {
-        'http': 'http://localhost:8888',
-        'https': 'https://localhost:8888',
-    }
-    probe = APIGetTester(url, proxies=proxies)
-    probe.run()
-    response = probe.measured()
-    assert response is not None
-    assert response['data']['id'] == 1
-    assert response['data']['first_name'] == 'George'
+    with proxy.start(['--host', '127.0.0.1', '--port', '8888']):
+        time.sleep(2)
+        url = supply_url + "/users/1"
+        proxies = {
+            'http': 'localhost:8888',
+            'https': 'localhost:8888',
+        }
+        probe = APIGetTester(url, proxies=proxies)
+        probe.run()
+        response = probe.measured()
+        assert response is not None
+        assert response['data']['id'] == 1
+        assert response['data']['first_name'] == 'George'
 
 
 def test_api_get_bad_proxy(supply_url):
     url = supply_url + "/users/1"
     proxies = {
-        'https': 'https://localhost:8889',
+        'https': 'localhost:8889',
     }
     probe = APIGetTester(url, proxies=proxies)
     with pytest.raises(requests.exceptions.RequestException):
         probe.run()
-
