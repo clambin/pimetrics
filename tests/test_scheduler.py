@@ -12,6 +12,7 @@ class Probe:
 
 def test_scheduler():
     scheduler = Scheduler()
+    scheduler.run(once=True)
     scheduler.register(Probe(), 2)
     scheduler.register(Probe(), 3)
     scheduler.register(Probe(), 5)

@@ -225,14 +225,22 @@ class APIProbe(Probe, ABC):
 
     Since API calls require specific setup, measure should be overriden to specify application-specific logic.
     """
-    def __init__(self, url, proxies=None):
+    def __init__(self, url, proxy=None):
         """
         :param url: the base URL for the API service. Will be extended by the endpoint specified in get/post
-        :param proxies: Proxies to use for the API call, in requeusts proxy format (dict of 'protocol': 'url')
+        :param proxy: URL of Proxy server
         """
         super().__init__()
         self.url = url
-        self.proxies = proxies
+        self.proxies = APIProbe._build_proxy_map(proxy)
+
+    @staticmethod
+    def _build_proxy_map(url):
+        if url:
+            if len(url.split('://')) != 2:
+                url = f'http://{url}'
+            return {'http': url, 'https': url}
+        return None
 
     def get(self, endpoint=None, headers=None, body=None, params=None):
         """Call the API via HTTP GET"""

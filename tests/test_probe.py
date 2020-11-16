@@ -101,8 +101,8 @@ def test_probes():
 
 
 class APIGetTester(APIProbe):
-    def __init__(self, url, proxies=None):
-        super().__init__(url, proxies=proxies)
+    def __init__(self, url, proxy_url=None):
+        super().__init__(url, proxy=proxy_url)
 
     def measure(self):
         response = self.get()
@@ -169,11 +169,7 @@ def test_api_get_proxy(supply_url):
     with proxy.start(['--host', '127.0.0.1', '--port', '8888']):
         time.sleep(2)
         url = supply_url + "/users/1"
-        proxies = {
-            'http': 'localhost:8888',
-            'https': 'localhost:8888',
-        }
-        probe = APIGetTester(url, proxies=proxies)
+        probe = APIGetTester(url, proxy_url='http://localhost:8888')
         probe.run()
         response = probe.measured()
         assert response is not None
@@ -183,9 +179,16 @@ def test_api_get_proxy(supply_url):
 
 def test_api_get_bad_proxy(supply_url):
     url = supply_url + "/users/1"
-    proxies = {
-        'https': 'localhost:8889',
-    }
-    probe = APIGetTester(url, proxies=proxies)
+    probe = APIGetTester(url, proxy_url='http://localhost:8889')
     with pytest.raises(requests.exceptions.RequestException):
         probe.run()
+
+
+@pytest.mark.parametrize('url, result', [
+    ('http://localhost:8888', {'http': 'http://localhost:8888', 'https': 'http://localhost:8888'}),
+    ('localhost:8888', {'http': 'http://localhost:8888', 'https': 'http://localhost:8888'}),
+    ('', None),
+    (None, None),
+])
+def test_proxy_parser(url, result):
+    assert APIProbe._build_proxy_map(url) == result

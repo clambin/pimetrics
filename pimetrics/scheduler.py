@@ -18,7 +18,7 @@ class _ScheduledProbe:
 class Scheduler:
     def __init__(self):
         self.scheduled_items = []
-        self.min_interval = None
+        self.min_interval = 0
 
     def register(self, probe, interval=5):
         """
