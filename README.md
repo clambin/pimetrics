@@ -46,7 +46,10 @@ CLASSES
      |  __init__(self, url, proxy=None)
      |      :param url: the base URL for the API service. Will be extended by the endpoint specified in get/post
      |      :param proxy: URL of Proxy server
-     |  
+     | 
+     |  call(self, endpoint=None, headers=None, body=None, params=None, method=<Method.GET: 1>)
+     |      Convenience wrapper function for HTTP GET/POST calls
+     | 
      |  get(self, endpoint=None, headers=None, body=None, params=None)
      |      Call the API via HTTP GET
      |  
