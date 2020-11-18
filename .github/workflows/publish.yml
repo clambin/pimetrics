@@ -1,0 +1,27 @@
+name: publish
+
+on:
+  workflow_run:
+    workflows: ["Test"]
+    branches:
+      - master
+      - develop
+    types:
+      - completed
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions/setup-python@v2
+      with:
+        python-version: 3.7
+    - name: package
+      run: |
+        python setup.py sdist
+    - name: publish
+      if: startsWith(github.ref, 'refs/tags')
+      uses: pypa/gh-action-pypi-publish@master
+      with:
+        password: ${{ secrets.PYPI_TOKEN }}

@@ -11,6 +11,8 @@ import shlex
 import subprocess  # nosec
 import threading
 import requests
+from enum import Enum
+import logging
 from abc import ABC, abstractmethod
 
 
@@ -225,6 +227,11 @@ class APIProbe(Probe, ABC):
 
     Since API calls require specific setup, measure should be overriden to specify application-specific logic.
     """
+
+    class Method(Enum):
+        GET = 1
+        POST = 2
+
     def __init__(self, url, proxy=None):
         """
         :param url: the base URL for the API service. Will be extended by the endpoint specified in get/post
@@ -247,7 +254,23 @@ class APIProbe(Probe, ABC):
         url = f'{self.url}{endpoint}' if endpoint else self.url
         return requests.get(url, headers=headers, json=body, params=params, proxies=self.proxies)
 
-    def post(self, endpoint=None, headers=None, body=None):
+    def post(self, endpoint=None, headers=None, body=None, params=None):
         """Call the API via HTTP POST"""
         url = f'{self.url}{endpoint}' if endpoint else self.url
-        return requests.post(url, headers=headers, json=body, proxies=self.proxies)
+        return requests.post(url, headers=headers, json=body, params=params, proxies=self.proxies)
+
+    def _call(self, endpoint=None, headers=None, body=None, params=None, method=Method.GET):
+        """Convenience wrapper function for HTTP GET/POST calls"""
+        try:
+            if method == APIProbe.Method.GET:
+                response = self.get(endpoint=endpoint, headers=headers, body=body, params=params)
+            else:
+                response = self.post(endpoint=endpoint, headers=headers, body=body, params=params)
+            if response.status_code == 200:
+                return response.json()
+            else:
+                logging.error("%d - %s" % (response.status_code, response.reason))
+        except requests.exceptions.RequestException as err:
+            logging.warning(f'Failed to call "{self.url}": "{err}')
+        return None
+
