@@ -1,7 +1,6 @@
 import pytest
 import proxy
 import time
-import requests
 from pimetrics.probe import APIProbe
 
 
@@ -10,7 +9,7 @@ class APIGetTester(APIProbe):
         super().__init__(url, proxy=proxy_url)
 
     def measure(self):
-        return self._call()
+        return self.call()
 
 
 class APIPostTester(APIProbe):
@@ -20,10 +19,7 @@ class APIPostTester(APIProbe):
         self.behave = True
 
     def measure(self):
-        response = self.post(body=self.body if self.behave else 'this will trigger an error')
-        if response.status_code != 201:
-            return None
-        return response.json()
+        return self.call(body=self.body if self.behave else 'this will trigger an error', method=APIProbe.Method.POST)
 
 
 @pytest.fixture

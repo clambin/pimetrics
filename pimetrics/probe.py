@@ -259,17 +259,18 @@ class APIProbe(Probe, ABC):
         url = f'{self.url}{endpoint}' if endpoint else self.url
         return requests.post(url, headers=headers, json=body, params=params, proxies=self.proxies)
 
-    def _call(self, endpoint=None, headers=None, body=None, params=None, method=Method.GET):
+    def call(self, endpoint=None, headers=None, body=None, params=None, method=Method.GET):
         """Convenience wrapper function for HTTP GET/POST calls"""
         try:
             if method == APIProbe.Method.GET:
                 response = self.get(endpoint=endpoint, headers=headers, body=body, params=params)
+                if response.status_code == 200:
+                    return response.json()
             else:
                 response = self.post(endpoint=endpoint, headers=headers, body=body, params=params)
-            if response.status_code == 200:
-                return response.json()
-            else:
-                logging.error("%d - %s" % (response.status_code, response.reason))
+                if response.status_code == 201:
+                    return response.json()
+            logging.error("%d - %s" % (response.status_code, response.reason))
         except requests.exceptions.RequestException as err:
             logging.warning(f'Failed to call "{self.url}": "{err}')
         return None
