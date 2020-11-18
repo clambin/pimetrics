@@ -274,4 +274,3 @@ class APIProbe(Probe, ABC):
         except requests.exceptions.RequestException as err:
             logging.warning(f'Failed to call "{self.url}": "{err}')
         return None
-

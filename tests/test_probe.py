@@ -1,9 +1,6 @@
 import os
-import time
 import pytest
-import requests
-import proxy
-from pimetrics.probe import Probe, FileProbe, SysFSProbe, ProcessProbe, Probes, APIProbe
+from pimetrics.probe import Probe, FileProbe, SysFSProbe, ProcessProbe, Probes
 
 
 class SimpleProbe(Probe):
@@ -98,5 +95,3 @@ def test_probes():
         for j in range(len(results)):
             target = i if j % 2 == 0 else 4 - i
             assert results[j] == target
-
-
