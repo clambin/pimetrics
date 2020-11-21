@@ -7,7 +7,6 @@ on:
 jobs:
   publish:
     runs-on: ubuntu-latest
-    if: {{ github.ref == 'ref/head/master' }}
     steps:
     - uses: actions/checkout@v2
     - uses: actions/setup-python@v2
@@ -17,6 +16,7 @@ jobs:
       run: |
         python setup.py sdist
     - name: publish
+      if: {{ github.ref == 'ref/head/master' }}
       uses: pypa/gh-action-pypi-publish@master
       with:
         password: ${{ secrets.PYPI_TOKEN }}
