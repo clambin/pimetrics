@@ -232,7 +232,7 @@ class APIProbe(Probe, ABC):
         GET = 1
         POST = 2
 
-    def __init__(self, url, proxy=None):
+    def __init__(self, url, proxy=None, is_json=True):
         """
         :param url: the base URL for the API service. Will be extended by the endpoint specified in get/post
         :param proxy: URL of Proxy server
@@ -240,6 +240,15 @@ class APIProbe(Probe, ABC):
         super().__init__()
         self.url = url
         self.proxies = APIProbe._build_proxy_map(proxy)
+        self._is_json = is_json
+
+    @property
+    def is_json(self):
+        return self._is_json
+
+    @is_json.setter
+    def is_json(self, value):
+        self._is_json = value
 
     @staticmethod
     def _build_proxy_map(url):
@@ -249,27 +258,33 @@ class APIProbe(Probe, ABC):
             return {'http': url, 'https': url}
         return None
 
-    def get(self, endpoint=None, headers=None, body=None, params=None):
+    def get(self, endpoint='', headers=None, body=None, params=None):
         """Call the API via HTTP GET"""
         url = f'{self.url}{endpoint}' if endpoint else self.url
-        return requests.get(url, headers=headers, json=body, params=params, proxies=self.proxies)
+        if self.is_json:
+            return requests.get(url, headers=headers, json=body, params=params, proxies=self.proxies)
+        else:
+            return requests.get(url, headers=headers, data=body, params=params, proxies=self.proxies)
 
-    def post(self, endpoint=None, headers=None, body=None, params=None):
+    def post(self, endpoint='', headers=None, body=None, params=None):
         """Call the API via HTTP POST"""
         url = f'{self.url}{endpoint}' if endpoint else self.url
-        return requests.post(url, headers=headers, json=body, params=params, proxies=self.proxies)
+        if self.is_json:
+            return requests.post(url, headers=headers, json=body, params=params, proxies=self.proxies)
+        else:
+            return requests.post(url, headers=headers, data=body, params=params, proxies=self.proxies)
 
-    def call(self, endpoint=None, headers=None, body=None, params=None, method=Method.GET):
+    def call(self, endpoint='', headers=None, body=None, params=None, method=Method.GET):
         """Convenience wrapper function for HTTP GET/POST calls"""
         try:
             if method == APIProbe.Method.GET:
                 response = self.get(endpoint=endpoint, headers=headers, body=body, params=params)
                 if response.status_code == 200:
-                    return response.json()
+                    return response.json() if self.is_json else response.content
             else:
                 response = self.post(endpoint=endpoint, headers=headers, body=body, params=params)
                 if response.status_code == 201:
-                    return response.json()
+                    return response.json() if self.is_json else response.content
             logging.error("%d - %s" % (response.status_code, response.reason))
         except requests.exceptions.RequestException as err:
             logging.warning(f'Failed to call "{self.url}": "{err}')

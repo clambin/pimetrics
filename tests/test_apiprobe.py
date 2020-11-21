@@ -1,20 +1,21 @@
 import pytest
 import proxy
 import time
+import json
 from pimetrics.probe import APIProbe
 
 
 class APIGetTester(APIProbe):
-    def __init__(self, url, proxy_url=None):
-        super().__init__(url, proxy=proxy_url)
+    def __init__(self, url, proxy_url=None, is_json=True):
+        super().__init__(url, proxy=proxy_url, is_json=is_json)
 
     def measure(self):
         return self.call()
 
 
 class APIPostTester(APIProbe):
-    def __init__(self, url, name, job):
-        super().__init__(url)
+    def __init__(self, url, name, job, is_json=True):
+        super().__init__(url, is_json=is_json)
         self.body = {'name': name, 'job': job}
         self.behave = True
 
@@ -90,3 +91,14 @@ def test_api_get_bad_proxy(supply_url):
 ])
 def test_proxy_parser(url, result):
     assert APIProbe._build_proxy_map(url) == result
+
+
+@pytest.mark.parametrize('user_id, first_name', [(1, 'George'), (2, 'Janet')])
+def test_nonjson_api(supply_url, user_id, first_name):
+    url = supply_url + f'/users/{user_id}'
+    probe = APIGetTester(url, is_json=False)
+    assert probe.is_json is False
+    probe.run()
+    result = json.loads(probe.measured().decode('unicode_escape'))
+    assert result['data']['id'] == user_id
+    assert result['data']['first_name'] == first_name

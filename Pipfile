@@ -11,6 +11,7 @@ proxy-py = "*"
 flake8 = "*"
 bandit = "*"
 safety = "*"
+xmltodict = "*"
 
 [packages]
 requests = "*"
