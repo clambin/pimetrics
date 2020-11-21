@@ -31,14 +31,14 @@ class Scheduler:
         if not self.min_interval or interval < self.min_interval:
             self.min_interval = interval
 
-    def run(self, once=False, duration=None):
+    def run(self, once=False, duration=5):
         """
         Run all registered probes
 
         :param once: Run all probes only once (regardless of their specified interval)
         :param duration: How long we should run all required probes
         """
-        end_time = None if duration is None else time.time() + duration
+        end_time = time.time() + duration
         while True:
             next_run = time.time() + self.min_interval
             for item in self.scheduled_items:
@@ -46,4 +46,6 @@ class Scheduler:
                     item.run()
             if once or (end_time and time.time() >= end_time):
                 break
-            time.sleep(next_run - time.time())
+            period = next_run - time.time()
+            if period > 0:
+                time.sleep(period)

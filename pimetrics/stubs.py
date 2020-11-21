@@ -5,7 +5,7 @@ from pimetrics.probe import APIProbe
 
 class APIStub(APIProbe, ABC):
     def __init__(self, testfiles=None):
-        super().__init__('')
+        APIProbe.__init__(self, url='')
         self.testfiles = testfiles if testfiles is not None else dict()
 
     def call(self, endpoint='', headers=None, body=None, params=None, method=APIProbe.Method.GET):
